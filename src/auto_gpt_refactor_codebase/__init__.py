@@ -80,7 +80,7 @@ class AutoGPTRefactorCodebase(AutoGPTPluginTemplate):
         prompt.add_command(
             "gen_tree",
             "Prints an ascii tree of the entire codebase",
-            {},
+            {"codebase_root": "<codebase_root>"},
             gen_tree,
         )
         prompt.add_command(

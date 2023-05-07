@@ -2,25 +2,16 @@ import os
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, TypedDict
 
 
-def gen_tree():
-    """return an ascii representation of the directory tree at CODEBASE_ROOT"""
-    root = os.getenv("CODEBASE_ROOT")
-    if not root:
-        return "No codebase root found. Set the CODEBASE_ROOT environment variable."
-
-    return _gen_tree(root)
-
-
-def _gen_tree(root: str, indent_depth=0):
-    """return an ascii representation of the directory tree at root/"""
+def gen_tree(codebase_root: str, indent_depth=0):
+    """return an ascii representation of the directory tree at codebase_root/"""
     indent = " " * 4 * (indent_depth)
-    tree = "{}{}".format(indent, os.path.basename(root))
-    if not os.path.isdir(root):
+    tree = "{}{}".format(indent, os.path.basename(codebase_root))
+    if not os.path.isdir(codebase_root):
         return tree + "\n"
     tree += "/\n"
-    for f in os.listdir(root):
-        full_path = os.path.join(root, f)
-        tree += _gen_tree(full_path, indent_depth=indent_depth + 1)
+    for f in os.listdir(codebase_root):
+        full_path = os.path.join(codebase_root, f)
+        tree += gen_tree(full_path, indent_depth=indent_depth + 1)
     return tree
 
 

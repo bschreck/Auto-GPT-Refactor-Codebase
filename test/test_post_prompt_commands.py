@@ -2,16 +2,9 @@ import os
 from src.auto_gpt_refactor_codebase.refactor_codebase import gen_tree, list_dirs, read_files
 
 
-def test_gen_tree_no_codebase_root():
-    os.environ["CODEBASE_ROOT"] = ""
-    assert gen_tree() == "No codebase root found. Set the CODEBASE_ROOT environment variable."
-
-
 def test_gen_tree():
-    os.environ["CODEBASE_ROOT"] = "test/fake_codebase"
-    print(gen_tree())
     assert (
-        gen_tree()
+        gen_tree("test/fake_codebase")
         == """fake_codebase/
     fake_codebase.py
     __init__.py
