@@ -25,7 +25,7 @@ class AutoGPTRefactorCodebase(AutoGPTPluginTemplate):
     def __init__(self):
         super().__init__()
         self._name = "Auto-GPT-Refactor-Codebase"
-        self._version = "0.1.0"
+        self._version = "0.1.1"
         self._description = "Refactors your code base."
 
     def can_handle_on_response(self) -> bool:
