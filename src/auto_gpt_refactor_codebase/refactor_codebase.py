@@ -32,3 +32,12 @@ def list_dirs(dirs: List[str]):
         repr += ", ".join(["{}[{}]".format(d, ftype) for d, ftype in zip(fnames, ftypes)])
         repr += "\n"
     return repr
+
+
+def read_files(filepaths: List[str]):
+    return "\n\n--------\n\n".join([read_file(filepath) for filepath in filepaths])
+
+
+def read_file(filepath: str):
+    with open(filepath, "r") as f:
+        return f"# {filepath}\n{f.read()}"

@@ -61,6 +61,7 @@ class AutoGPTRefactorCodebase(AutoGPTPluginTemplate):
         from .refactor_codebase import (
             gen_tree,
             list_dirs,
+            read_files,
             # list_functions,
             # refactor_files,
             # refactor_functions,
