@@ -1,10 +1,15 @@
 """This is a template for Auto-GPT plugins."""
-import abc
+import os
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, TypedDict
 
-from abstract_singleton import AbstractSingleton, Singleton
+from auto_gpt_plugin_template import AutoGPTPluginTemplate
+from dotenv import load_dotenv
 
 PromptGenerator = TypeVar("PromptGenerator")
+
+with open(str(Path(os.getcwd()) / ".env"), "r", encoding="utf-8") as fp:
+    load_dotenv(stream=fp)
 
 
 class Message(TypedDict):
@@ -12,18 +17,17 @@ class Message(TypedDict):
     content: str
 
 
-class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
+class AutoGPTRefactorCodebase(AutoGPTPluginTemplate):
     """
-    This is a template for Auto-GPT plugins.
+    Refactor your code base
     """
 
     def __init__(self):
         super().__init__()
-        self._name = "Auto-GPT-Plugin-Template"
+        self._name = "Auto-GPT-Refactor-Codebase"
         self._version = "0.1.0"
-        self._description = "This is a template for Auto-GPT plugins."
+        self._description = "Refactors your code base."
 
-    @abc.abstractmethod
     def can_handle_on_response(self) -> bool:
         """This method is called to check that the plugin can
         handle the on_response method.
@@ -32,21 +36,18 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
             bool: True if the plugin can handle the on_response method."""
         return False
 
-    @abc.abstractmethod
     def on_response(self, response: str, *args, **kwargs) -> str:
         """This method is called when a response is received from the model."""
         pass
 
-    @abc.abstractmethod
     def can_handle_post_prompt(self) -> bool:
         """This method is called to check that the plugin can
         handle the post_prompt method.
 
         Returns:
             bool: True if the plugin can handle the post_prompt method."""
-        return False
+        return True
 
-    @abc.abstractmethod
     def post_prompt(self, prompt: PromptGenerator) -> PromptGenerator:
         """This method is called just after the generate_prompt is called,
             but actually before the prompt is generated.
@@ -57,9 +58,40 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
         Returns:
             PromptGenerator: The prompt generator.
         """
-        pass
+        from .refactor_codebase import (
+            gen_tree,
+            list_dirs,
+            # list_functions,
+            # refactor_files,
+            # refactor_functions,
+            # execute_tests,
+            # execute_snippets,
+            # check_syntax_parses,
+            # build,
+            # execute_git_commands,
+            # move_files,
+            # rename_files,
+            # move_dirs,
+            # rename_dirs,
+            # rename_vars,
+        )
 
-    @abc.abstractmethod
+        prompt.add_command(
+            "gen_tree",
+            "Prints an ascii tree of the entire codebase",
+            {},
+            gen_tree,
+        )
+        prompt.add_command(
+            "list_dirs",
+            "List the files in a list of directories",
+            {
+                "dirs": "<dirs>",
+            },
+            list_dirs,
+        )
+        return prompt
+
     def can_handle_on_planning(self) -> bool:
         """This method is called to check that the plugin can
         handle the on_planning method.
@@ -68,10 +100,7 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
             bool: True if the plugin can handle the on_planning method."""
         return False
 
-    @abc.abstractmethod
-    def on_planning(
-        self, prompt: PromptGenerator, messages: List[Message]
-    ) -> Optional[str]:
+    def on_planning(self, prompt: PromptGenerator, messages: List[Message]) -> Optional[str]:
         """This method is called before the planning chat completion is done.
 
         Args:
@@ -80,7 +109,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
         """
         pass
 
-    @abc.abstractmethod
     def can_handle_post_planning(self) -> bool:
         """This method is called to check that the plugin can
         handle the post_planning method.
@@ -89,7 +117,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
             bool: True if the plugin can handle the post_planning method."""
         return False
 
-    @abc.abstractmethod
     def post_planning(self, response: str) -> str:
         """This method is called after the planning chat completion is done.
 
@@ -101,7 +128,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
         """
         pass
 
-    @abc.abstractmethod
     def can_handle_pre_instruction(self) -> bool:
         """This method is called to check that the plugin can
         handle the pre_instruction method.
@@ -110,7 +136,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
             bool: True if the plugin can handle the pre_instruction method."""
         return False
 
-    @abc.abstractmethod
     def pre_instruction(self, messages: List[Message]) -> List[Message]:
         """This method is called before the instruction chat is done.
 
@@ -122,7 +147,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
         """
         pass
 
-    @abc.abstractmethod
     def can_handle_on_instruction(self) -> bool:
         """This method is called to check that the plugin can
         handle the on_instruction method.
@@ -131,7 +155,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
             bool: True if the plugin can handle the on_instruction method."""
         return False
 
-    @abc.abstractmethod
     def on_instruction(self, messages: List[Message]) -> Optional[str]:
         """This method is called when the instruction chat is done.
 
@@ -143,7 +166,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
         """
         pass
 
-    @abc.abstractmethod
     def can_handle_post_instruction(self) -> bool:
         """This method is called to check that the plugin can
         handle the post_instruction method.
@@ -152,7 +174,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
             bool: True if the plugin can handle the post_instruction method."""
         return False
 
-    @abc.abstractmethod
     def post_instruction(self, response: str) -> str:
         """This method is called after the instruction chat is done.
 
@@ -164,7 +185,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
         """
         pass
 
-    @abc.abstractmethod
     def can_handle_pre_command(self) -> bool:
         """This method is called to check that the plugin can
         handle the pre_command method.
@@ -173,10 +193,7 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
             bool: True if the plugin can handle the pre_command method."""
         return False
 
-    @abc.abstractmethod
-    def pre_command(
-        self, command_name: str, arguments: Dict[str, Any]
-    ) -> Tuple[str, Dict[str, Any]]:
+    def pre_command(self, command_name: str, arguments: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
         """This method is called before the command is executed.
 
         Args:
@@ -188,7 +205,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
         """
         pass
 
-    @abc.abstractmethod
     def can_handle_post_command(self) -> bool:
         """This method is called to check that the plugin can
         handle the post_command method.
@@ -197,7 +213,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
             bool: True if the plugin can handle the post_command method."""
         return False
 
-    @abc.abstractmethod
     def post_command(self, command_name: str, response: str) -> str:
         """This method is called after the command is executed.
 
@@ -210,7 +225,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
         """
         pass
 
-    @abc.abstractmethod
     def can_handle_chat_completion(
         self, messages: Dict[Any, Any], model: str, temperature: float, max_tokens: int
     ) -> bool:
@@ -227,10 +241,7 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
               bool: True if the plugin can handle the chat_completion method."""
         return False
 
-    @abc.abstractmethod
-    def handle_chat_completion(
-        self, messages: List[Message], model: str, temperature: float, max_tokens: int
-    ) -> str:
+    def handle_chat_completion(self, messages: List[Message], model: str, temperature: float, max_tokens: int) -> str:
         """This method is called when the chat completion is done.
 
         Args:
@@ -244,10 +255,7 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
         """
         pass
 
-    @abc.abstractmethod
-    def can_handle_text_embedding(
-        self, text: str
-    ) -> bool:
+    def can_handle_text_embedding(self, text: str) -> bool:
         """This method is called to check that the plugin can
           handle the text_embedding method.
         Args:
@@ -255,11 +263,8 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
           Returns:
               bool: True if the plugin can handle the text_embedding method."""
         return False
-    
-    @abc.abstractmethod
-    def handle_text_embedding(
-        self, text: str
-    ) -> list:
+
+    def handle_text_embedding(self, text: str) -> list:
         """This method is called when the chat completion is done.
         Args:
             text (str): The text to be convert to embedding.
@@ -268,7 +273,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
         """
         pass
 
-    @abc.abstractmethod
     def can_handle_user_input(self, user_input: str) -> bool:
         """This method is called to check that the plugin can
         handle the user_input method.
@@ -280,7 +284,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
             bool: True if the plugin can handle the user_input method."""
         return False
 
-    @abc.abstractmethod
     def user_input(self, user_input: str) -> str:
         """This method is called to request user input to the user.
 
@@ -293,7 +296,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
 
         pass
 
-    @abc.abstractmethod
     def can_handle_report(self) -> bool:
         """This method is called to check that the plugin can
         handle the report method.
@@ -302,7 +304,6 @@ class AutoGPTPluginTemplate(AbstractSingleton, metaclass=Singleton):
             bool: True if the plugin can handle the report method."""
         return False
 
-    @abc.abstractmethod
     def report(self, message: str) -> None:
         """This method is called to report a message to the user.
 
